@@ -1,0 +1,2 @@
+1,sumanpan,sumanpan,1
+2,cashier1,cashier1,2
