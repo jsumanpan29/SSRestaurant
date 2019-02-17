@@ -1,7 +1,9 @@
 
+import java.awt.BorderLayout;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.table.*;
 
 public class Restaurant{
     
@@ -9,26 +11,44 @@ public class Restaurant{
         public static void main(String[] args) {
 //            init
             init();
-            Scanner sc = new Scanner(System.in);
-            String uname;
-            String pword;
-            System.out.println("Welcome to SSRestaurant");
-            System.out.println("Input Username:");
-            uname = sc.nextLine();
-            System.out.println("Input Password");
-            pword = sc.nextLine();
-            int menu;
+//            Scanner sc = new Scanner(System.in);
+//            First Panel
+            JPanel firstPanel = new JPanel();
+            JTextField ufield = new JTextField(10);
+            JTextField pfield = new JPasswordField(10);
             
-            if (loginUser(uname,pword) == 1) {
+            firstPanel.setLayout(new BoxLayout(firstPanel, BoxLayout.Y_AXIS));
+//            firstPanel.setLayout(new BoxLayout(firstPanel, BoxLayout.Y_AXIS));
+            firstPanel.add(new JLabel("Input Username:"));
+            firstPanel.add(Box.createVerticalStrut(15)); // a spacer
+            firstPanel.add(ufield);
+            firstPanel.add(Box.createVerticalStrut(15)); // a spacer
+            firstPanel.add(new JLabel("Input Password:"));
+            firstPanel.add(Box.createVerticalStrut(15)); // a spacer
+            firstPanel.add(pfield);
+            firstPanel.add(Box.createVerticalStrut(15)); // a spacer
+            JOptionPane.showConfirmDialog(null, firstPanel, "Welcome to SSRestaurant", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+//            int menu;
+            
+            if (loginUser(ufield.getText(),pfield.getText()) == 1) {
 //                Execute Owner Authorization
-                System.out.println("Owner Menu");
-                System.out.println("1. Users Options");
-                System.out.println("2. Menu Options");
-                menu = sc.nextInt();
-                switch(menu){
+//                System.out.println("Owner Menu");
+//                System.out.println("1. Users Options");
+//                System.out.println("2. Menu Options");
+                JPanel ownerPanel = new JPanel();
+                JTextField inputField = new JTextField();
+                ownerPanel.setLayout(new BoxLayout(ownerPanel, BoxLayout.Y_AXIS));
+                ownerPanel.add(new JLabel("1.)Users Options"));
+                ownerPanel.add(Box.createVerticalStrut(15)); // a spacer
+                ownerPanel.add(new JLabel("2.)Menu Options"));
+                ownerPanel.add(Box.createVerticalStrut(15)); // a spacer
+                ownerPanel.add(inputField);
+                JOptionPane.showConfirmDialog(null, ownerPanel, "Owner Menu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+//                menu = sc.nextInt();
+                switch(Integer.parseInt(inputField.getText())){
                     case 1:
 //                        show Users table
-                        usersTable();
+                       usersTable();
                         break;
                     case 2:
 //                        shows Menu table
@@ -126,39 +146,67 @@ public class Restaurant{
             }
         }
          
-         public static void usersTable() {
+          public static void usersTable() {
              try {
+                 
+                JFrame frame = new JFrame();
+                frame.setLayout(new BorderLayout());
+                JTable table = new JTable();
                  BufferedReader br = new BufferedReader(new FileReader("users.txt"));
                  String l;
-                 System.out.println("Users Tables");
+                 UserTableModel model = new UserTableModel();
+                 List<User> userList = new ArrayList<User>();
                  while((l = br.readLine()) != null){
                      String[] data = new String[0];
                      data = l.split(",");
-                     System.out.println("--------------------------------------------------");
-                     for (int i = 0; i < data.length; i++) {
-                         System.out.print(data[i]+ "|");
-                     }
-                     System.out.println();
+                         User user = new User();
+                         user.setUsername(data[1]);
+                         user.setRole(Integer.parseInt(data[3]));
+                         userList.add(user);
                  }
+                 model.setList(userList);
+                 table.setModel(model);
+                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                 frame.add(new JScrollPane(table));
+                 frame.setTitle("Users Table");
+                 frame.pack();
+                 frame.setVisible(true);
+                  System.out.println("Users Table Loaded");
+              
              } catch (Exception e) {
+                  System.out.println("Connection Error: "+e.getMessage());
              }
+            
         }
          
          public static void menuTable() {
              try {
+
+                JFrame frame = new JFrame();
+                frame.setLayout(new BorderLayout());
+                JTable table = new JTable();
                  BufferedReader br = new BufferedReader(new FileReader("menu.txt"));
                  String l;
-                 System.out.println("Menu Table");
-                 while ((l = br.readLine()) != null) {
+                 MenuTableModel model = new MenuTableModel();
+                 List<Menu> menuList = new ArrayList<Menu>();
+                 while((l = br.readLine()) != null){
                      String[] data = new String[0];
                      data = l.split(",");
-                     for (int i = 0; i < data.length; i++) {
-                         System.out.print(data[i] + "|");
-                     }
-                     System.out.println();
-                     
+                         Menu menu = new Menu();
+                         menu.setFoodname(data[1]);
+                         menu.setPrice(Double.parseDouble(data[2]));
+                         menuList.add(menu);
                  }
+                 model.setList(menuList);
+                 table.setModel(model);
+                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                 frame.add(new JScrollPane(table));
+                 frame.setTitle("Menu Table");
+                 frame.pack();
+                 frame.setVisible(true);
+                  System.out.println("Menu Table Loaded");
              } catch (Exception e) {
+                  System.out.println("Connection Error: "+e.getMessage());
              }
         }
 }
