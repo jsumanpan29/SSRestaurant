@@ -1,5 +1,7 @@
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
@@ -148,7 +150,12 @@ public class Restaurant{
          
           public static void usersTable() {
              try {
-                 
+                 JPanel panel = new JPanel();
+                 panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                 JButton insert = new JButton("Insert");
+                 JButton delete = new JButton("Delete");
+                 JButton update = new JButton("Update");
+//                  firstPanel.setLayout(new BoxLayout(firstPanel, BoxLayout.Y_AXIS));
                 JFrame frame = new JFrame();
                 frame.setLayout(new BorderLayout());
                 JTable table = new JTable();
@@ -166,11 +173,20 @@ public class Restaurant{
                  }
                  model.setList(userList);
                  table.setModel(model);
+//                 b1.setVerticalTextPosition(AbstractButton.BOTTOM);
+//                 b1.setHorizontalTextPosition(AbstractButton.CENTER);
+//                 b1.setMnemonic(KeyEvent.VK_S);
                  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                  frame.add(new JScrollPane(table));
                  frame.setTitle("Users Table");
                  frame.pack();
                  frame.setVisible(true);
+                 
+                 
+                 panel.add(insert);
+                 panel.add(delete);
+                 panel.add(update);
+                 frame.add(panel, BorderLayout.EAST);
                   System.out.println("Users Table Loaded");
               
              } catch (Exception e) {
