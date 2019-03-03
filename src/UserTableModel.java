@@ -68,10 +68,6 @@ class UserTableModel extends AbstractTableModel {
 //            Getting Row Data
            User user = data.get(row);
 //            for (User usr: list) {
-                System.out.println(user.getId() + " ID");
-                System.out.println(user.getUsername() + " Name");
-                System.out.println(user.getPassword()+ " Pword");
-                System.out.println(user.getRole() + " Role");
                 System.out.println("User Deleted: "+user.getId()+","+user.getUsername()+","+user.getRole());
 //            }
 //              remove data from list
@@ -89,8 +85,15 @@ class UserTableModel extends AbstractTableModel {
 //                fireTableDataChanged();
         }
         
+        public void addRow(User user){
+            data.add(user);
+            if (addUsertoFile()) {
+                fireTableDataChanged();
+            }
+        }
+         
+        
         public boolean deleteUserfromFile(int index){
-//               File Mf = new File("users_backup.txt");
                 File Tf = new File("users.txt");
                 PrintWriter Upw = null;
                 try 
@@ -104,6 +107,37 @@ class UserTableModel extends AbstractTableModel {
                     Upw.close();
 //                    Tf.renameTo(Mf);
 //                    Mf.delete();
+                    return true;
+                } catch (FileNotFoundException e1) {
+                    return false;
+                } catch (IOException ioe) {
+                    return false;
+                }
+                finally 
+                {
+                    if (Upw != null)
+                    {
+                        try
+                        {
+                            Upw.close();
+                        }
+                        catch (Exception ex){}
+                    }
+                }
+        }
+        
+        public boolean addUsertoFile(){
+             File Tf = new File("users.txt");
+                PrintWriter Upw = null;
+                try 
+                {
+                    Upw = new PrintWriter(new FileWriter(Tf));
+                    for (User user : data )
+                    {
+                        System.out.println("User added to new File: "+user.getId()+","+user.getUsername()+","+user.getRole());
+                        Upw.println(user.getId()+","+user.getUsername()+","+user.getPassword()+","+user.getRole());//Don't use Upw.println because the toString() method of UserInformation class is already using \n in last.
+                    }
+                    Upw.close();;
                     return true;
                 } catch (FileNotFoundException e1) {
                     return false;

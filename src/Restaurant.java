@@ -198,10 +198,53 @@ public class Restaurant{
                  delete.addActionListener(new ActionListener() {
                      @Override
                      public void actionPerformed(ActionEvent e) {
-//                         int row =  table.convertRowIndexToModel(table.getSelectedRow());
-//                          int col = table.getColumnModel().getColumnIndex("ID");
-//                          int id = (Integer) table.getModel().getValueAt(row, col);
-                         model.deleteRow(table.getSelectedRow());
+                         int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this user?", "Deleting User", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                         if (result == JOptionPane.OK_OPTION ) {
+//                             delete data
+                            model.deleteRow(table.getSelectedRow());
+                         }
+                         
+                     }
+                 });
+                 insert.addActionListener(new ActionListener() {
+                     @Override
+                     public void actionPerformed(ActionEvent e) {
+                         
+//                        JOptionPane.showConfirmDialog(parentComponent, e);
+                            JPanel insertPanel = new JPanel();
+                            JTextField idField = new JTextField();
+                            JTextField unameField = new JTextField();
+                            JTextField pwordField = new JTextField();
+                            JTextField roleField = new JTextField();
+                            
+                            insertPanel.setLayout(new BoxLayout(insertPanel, BoxLayout.Y_AXIS));
+                            insertPanel.add(new JLabel("Input ID:"));
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            insertPanel.add(idField);
+                            insertPanel.add(Box.createVerticalStrut(15));
+                            insertPanel.add(new JLabel("Input Username:"));
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            insertPanel.add(unameField);
+                            insertPanel.add(Box.createVerticalStrut(15));
+                            insertPanel.add(new JLabel("Input Password:"));
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            insertPanel.add(pwordField);
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            insertPanel.add(new JLabel("Input Role:"));
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            insertPanel.add(roleField);
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            int result = JOptionPane.showConfirmDialog(null, insertPanel, "Inserting new User", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                            
+                            if(result == JOptionPane.OK_OPTION){
+                                // insert user to database
+                                    User usr = new User();
+                                    usr.setId(Integer.parseInt(idField.getText()));
+                                    usr.setUsername(unameField.getText());
+                                    usr.setPassword(pwordField.getText());
+                                    usr.setRole(Integer.parseInt(roleField.getText()));
+                                    model.addRow(usr);
+                              }
                      }
                  });
                   System.out.println("Users Table Loaded");
