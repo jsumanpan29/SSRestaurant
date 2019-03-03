@@ -1,6 +1,8 @@
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
@@ -167,12 +169,17 @@ public class Restaurant{
                      String[] data = new String[0];
                      data = l.split(",");
                          User user = new User();
+                         user.setId(Integer.parseInt(data[0]));
                          user.setUsername(data[1]);
+                         user.setPassword(data[2]);
                          user.setRole(Integer.parseInt(data[3]));
                          userList.add(user);
                  }
                  model.setList(userList);
                  table.setModel(model);
+                  table.setAutoCreateRowSorter(true);
+                ((DefaultRowSorter)table.getRowSorter()).toggleSortOrder(0);
+                table.removeColumn(table.getColumnModel().getColumn(2));
 //                 b1.setVerticalTextPosition(AbstractButton.BOTTOM);
 //                 b1.setHorizontalTextPosition(AbstractButton.CENTER);
 //                 b1.setMnemonic(KeyEvent.VK_S);
@@ -187,6 +194,16 @@ public class Restaurant{
                  panel.add(delete);
                  panel.add(update);
                  frame.add(panel, BorderLayout.EAST);
+                 
+                 delete.addActionListener(new ActionListener() {
+                     @Override
+                     public void actionPerformed(ActionEvent e) {
+//                         int row =  table.convertRowIndexToModel(table.getSelectedRow());
+//                          int col = table.getColumnModel().getColumnIndex("ID");
+//                          int id = (Integer) table.getModel().getValueAt(row, col);
+                         model.deleteRow(table.getSelectedRow());
+                     }
+                 });
                   System.out.println("Users Table Loaded");
               
              } catch (Exception e) {
@@ -209,6 +226,7 @@ public class Restaurant{
                      String[] data = new String[0];
                      data = l.split(",");
                          Menu menu = new Menu();
+                         menu.setId(Integer.parseInt(data[0]));
                          menu.setFoodname(data[1]);
                          menu.setPrice(Double.parseDouble(data[2]));
                          menuList.add(menu);

@@ -1,7 +1,16 @@
 class Menu{
 
+    private int id;
     private String foodname;
     private double price;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
 
     public String getFoodname() {
         return foodname;

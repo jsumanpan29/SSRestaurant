@@ -2,7 +2,16 @@ class User{
     private String username;
     private String password;
     private int role;
+    private int id;
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+    
     public String getUsername() {
         return username;
     }
@@ -18,7 +27,6 @@ class User{
     public void setRole(int role) {
         this.role = role;
     }
-    
     
 
     public void setPassword(String password) {
