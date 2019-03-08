@@ -206,6 +206,13 @@ public class Restaurant{
                          
                      }
                  });
+                 update.addActionListener(new ActionListener() {
+
+                     @Override
+                     public void actionPerformed(ActionEvent e) {
+                         System.out.println(table.getModel().getValueAt(table.getSelectedRow(), 2));
+                     }
+                 });
                  insert.addActionListener(new ActionListener() {
                      @Override
                      public void actionPerformed(ActionEvent e) {
