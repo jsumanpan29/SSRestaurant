@@ -206,11 +206,88 @@ public class Restaurant{
                          
                      }
                  });
+                 update.addActionListener(new ActionListener() {
+                     @Override
+                     public void actionPerformed(ActionEvent e) {
+//                          System.out.println(table.getModel().getValueAt(table.getSelectedRow(), 2));
+                            JPanel updatePanel = new JPanel();
+                            JTextField idField = new JTextField();
+                            JTextField unameField = new JTextField();
+                            JTextField pwordField = new JTextField();
+                            JTextField roleField = new JTextField();
+                            
+                            updatePanel.setLayout(new BoxLayout(updatePanel, BoxLayout.Y_AXIS));
+                            updatePanel.add(new JLabel("Input ID:"));
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            updatePanel.add(idField);
+                            updatePanel.add(Box.createVerticalStrut(15));
+                            updatePanel.add(new JLabel("Input Username:"));
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            updatePanel.add(unameField);
+                            updatePanel.add(Box.createVerticalStrut(15));
+                            updatePanel.add(new JLabel("Input Password:"));
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            updatePanel.add(pwordField);
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            updatePanel.add(new JLabel("Input Role:"));
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            updatePanel.add(roleField);
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            idField.setEditable(false);
+                            idField.setText(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
+                            unameField.setText(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
+                            pwordField.setText(table.getModel().getValueAt(table.getSelectedRow(), 2).toString());
+                            roleField.setText(table.getModel().getValueAt(table.getSelectedRow(), 3).toString());
+                            
+                            int result = JOptionPane.showConfirmDialog(null, updatePanel, "Updating User", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                            
+                            if(result == JOptionPane.OK_OPTION){
+                                // insert user to database
+//                                    User usr = new User();
+//                                    usr.setId(Integer.parseInt(idField.getText()));
+//                                    model.updateRow();
+                                     table.getModel().setValueAt(Integer.parseInt(idField.getText()), table.getSelectedRow(), 0);
+                                    if (!unameField.getText().equals("")) {
+                                        if(!model.userNameExists(unameField.getText())){
+//                                            usr.setUsername(unameField.getText());
+                                            table.getModel().setValueAt(unameField.getText(), table.getSelectedRow(), 1);
+                                        }else{
+                                               JOptionPane.showMessageDialog(null, "Username already taken", null, JOptionPane.PLAIN_MESSAGE);
+                                               return;
+                                        }
+                                   }else{
+                                         JOptionPane.showMessageDialog(null, "Username missing", null, JOptionPane.PLAIN_MESSAGE);
+                                         return;
+                                    }
+                                    if(!pwordField.getText().equals("")){
+//                                         usr.setPassword(pwordField.getText());
+                                        table.getModel().setValueAt(pwordField.getText(), table.getSelectedRow(), 2);
+                                          
+                                    }else{
+                                            JOptionPane.showMessageDialog(null, "Password missing", null, JOptionPane.PLAIN_MESSAGE);
+                                            return;
+                                    }
+                                    if(!roleField.getText().equals("")){
+//                                         usr.setRole(Integer.parseInt(roleField.getText()));
+                                        table.getModel().setValueAt(Integer.parseInt(roleField.getText()), table.getSelectedRow(), 3);
+                                          
+                                    }else{
+                                            JOptionPane.showMessageDialog(null, "Password missing", null, JOptionPane.PLAIN_MESSAGE);
+                                            return;
+                                    }
+                                    
+//                                    table.getModel().setValueAt(usr.getId(), table.getSelectedRow(), 0);
+//                                    table.getModel().setValueAt(usr.getUsername(), table.getSelectedRow(), 1);
+//                                    table.getModel().setValueAt(usr.getPassword(), table.getSelectedRow(), 2);
+//                                    table.getModel().setValueAt(usr.getRole(), table.getSelectedRow(), 3);
+                                    model.updateRow();
+                              }
+                     }
+                 });
                  insert.addActionListener(new ActionListener() {
                      @Override
                      public void actionPerformed(ActionEvent e) {
                          
-//                        JOptionPane.showConfirmDialog(parentComponent, e);
                             JPanel insertPanel = new JPanel();
                             JTextField idField = new JTextField();
                             JTextField unameField = new JTextField();
@@ -234,15 +311,46 @@ public class Restaurant{
                             insertPanel.add(Box.createVerticalStrut(15)); // a spacer
                             insertPanel.add(roleField);
                             insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            idField.setEditable(false);
+                            String getLastID = table.getModel().getValueAt(table.getRowCount()-1, 0).toString();
+                            int incrementID = Integer.valueOf(getLastID) + 1;
+                            idField.setText(String.valueOf(incrementID));
                             int result = JOptionPane.showConfirmDialog(null, insertPanel, "Inserting new User", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
                             
                             if(result == JOptionPane.OK_OPTION){
                                 // insert user to database
                                     User usr = new User();
-                                    usr.setId(Integer.parseInt(idField.getText()));
-                                    usr.setUsername(unameField.getText());
-                                    usr.setPassword(pwordField.getText());
-                                    usr.setRole(Integer.parseInt(roleField.getText()));
+                                     usr.setId(Integer.parseInt(idField.getText()));
+                                    if (!unameField.getText().equals("")) {
+                                        if(!model.userNameExists(unameField.getText())){
+                                            usr.setUsername(unameField.getText());
+                                           
+                                        }else{
+                                               JOptionPane.showMessageDialog(null, "Username already taken", null, JOptionPane.PLAIN_MESSAGE);
+                                               return;
+                                        }
+                                   }else{
+                                         JOptionPane.showMessageDialog(null, "Username missing", null, JOptionPane.PLAIN_MESSAGE);
+                                         return;
+                                    }
+                                    if(!pwordField.getText().equals("")){
+                                         usr.setPassword(pwordField.getText());
+                                          
+                                    }else{
+                                            JOptionPane.showMessageDialog(null, "Password missing", null, JOptionPane.PLAIN_MESSAGE);
+                                            return;
+                                    }
+                                    if(!roleField.getText().equals("")){
+                                         usr.setRole(Integer.parseInt(roleField.getText()));
+                                          
+                                    }else{
+                                            JOptionPane.showMessageDialog(null, "Password missing", null, JOptionPane.PLAIN_MESSAGE);
+                                            return;
+                                    }
+//                                    usr.setId(Integer.parseInt(idField.getText()));
+//                                    usr.setUsername(unameField.getText());
+//                                    usr.setPassword(pwordField.getText());
+//                                    usr.setRole(Integer.parseInt(roleField.getText()));
                                     model.addRow(usr);
                               }
                      }
