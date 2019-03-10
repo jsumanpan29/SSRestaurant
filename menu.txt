@@ -1,1 +1,2 @@
-1,KareKare,25
+1,KareKare,25.0
+2,Sumanpan,15.0

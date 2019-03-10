@@ -109,7 +109,7 @@ class UserTableModel extends AbstractTableModel {
         }
          
         public void updateRow(){
-            File Tf = new File("users.txt");
+                File Tf = new File("users.txt");
                 PrintWriter Upw = null;
                 try 
                 {
@@ -188,35 +188,23 @@ class UserTableModel extends AbstractTableModel {
         }
         
         public boolean addUsertoFile(){
-            File mainFile = new File("users.txt");
-             File tempFile = new File("usersOutput.txt");
+             File Tf = new File("users.txt");
                 PrintWriter Upw = null;
                 try 
                 {
-                    Upw = new PrintWriter(new FileWriter(tempFile));
-                    
+                    Upw = new PrintWriter(new FileWriter(Tf));
                     for (User user : data )
                     {
                         System.out.println("User added to new File: "+user.getId()+","+user.getUsername()+","+user.getRole());
                         Upw.println(user.getId()+","+user.getUsername()+","+user.getPassword()+","+user.getRole());//Don't use Upw.println because the toString() method of UserInformation class is already using \n in last.
                     }
                     Upw.close();
-                    if (mainFile.exists() && tempFile.exists()) {
-                        mainFile.delete();
-                        tempFile.renameTo(mainFile);
-                        System.out.println ("\nUser Deleted!");
-                    }
-//                    if (!mainFile.delete()) {
-//                          System.out.println("Could not delete file");
-//                    }
-//                    if (!tempFile.renameTo(mainFile)) {
-//                         System.out.println("Could not rename file");
-//                    }
+//                    Tf.renameTo(Mf);
+//                    Mf.delete();
                     return true;
                 } catch (FileNotFoundException e1) {
                     return false;
                 } catch (IOException ioe) {
-                    System.out.println(ioe);
                     return false;
                 }
                 finally 
@@ -227,9 +215,7 @@ class UserTableModel extends AbstractTableModel {
                         {
                             Upw.close();
                         }
-                        catch (Exception ex){
-                            System.out.println(ex);
-                        }
+                        catch (Exception ex){}
                     }
                 }
         }

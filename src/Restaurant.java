@@ -36,9 +36,6 @@ public class Restaurant{
             
             if (loginUser(ufield.getText(),pfield.getText()) == 1) {
 //                Execute Owner Authorization
-//                System.out.println("Owner Menu");
-//                System.out.println("1. Users Options");
-//                System.out.println("2. Menu Options");
                 JPanel ownerPanel = new JPanel();
                 JTextField inputField = new JTextField();
                 ownerPanel.setLayout(new BoxLayout(ownerPanel, BoxLayout.Y_AXIS));
@@ -48,7 +45,6 @@ public class Restaurant{
                 ownerPanel.add(Box.createVerticalStrut(15)); // a spacer
                 ownerPanel.add(inputField);
                 JOptionPane.showConfirmDialog(null, ownerPanel, "Owner Menu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-//                menu = sc.nextInt();
                 switch(Integer.parseInt(inputField.getText())){
                     case 1:
 //                        show Users table
@@ -58,9 +54,13 @@ public class Restaurant{
 //                        shows Menu table
                         menuTable();
                         break;
+                    default:
+                        
+                        break;
                 }
             }else{
 //                Execute Cashier Authorization
+                    
             }
         }
         
@@ -93,9 +93,6 @@ public class Restaurant{
             } catch (IOException e) {
                 System.out.println("Connection Error: "+e.getMessage());
             }
-//            prints value
-            System.out.println(val);
-            
             return val;
         }
 //        Connection
@@ -365,7 +362,11 @@ public class Restaurant{
          
          public static void menuTable() {
              try {
-
+                  JPanel panel = new JPanel();
+                 panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+                 JButton insert = new JButton("Insert");
+                 JButton delete = new JButton("Delete");
+                 JButton update = new JButton("Update");
                 JFrame frame = new JFrame();
                 frame.setLayout(new BorderLayout());
                 JTable table = new JTable();
@@ -384,11 +385,134 @@ public class Restaurant{
                  }
                  model.setList(menuList);
                  table.setModel(model);
+                 table.setAutoCreateRowSorter(true);
+                 ((DefaultRowSorter)table.getRowSorter()).toggleSortOrder(0);
+//                 table.removeColumn(table.getColumnModel().getColumn(2));
                  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                  frame.add(new JScrollPane(table));
                  frame.setTitle("Menu Table");
                  frame.pack();
                  frame.setVisible(true);
+                 
+                 
+                 panel.add(insert);
+                 panel.add(delete);
+                 panel.add(update);
+                 frame.add(panel, BorderLayout.EAST);
+                 
+                 delete.addActionListener(new ActionListener() {
+                      @Override
+                      public void actionPerformed(ActionEvent e) {
+                          int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this user?", "Deleting User", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                         if (result == JOptionPane.OK_OPTION ) {
+//                             delete data
+                            model.deleteRow(table.getSelectedRow());
+                         }
+                      }
+                  });
+                  insert.addActionListener(new ActionListener() {
+                     @Override
+                     public void actionPerformed(ActionEvent e) {
+                         
+                            JPanel insertPanel = new JPanel();
+                            JTextField idField = new JTextField();
+                            JTextField fnameField = new JTextField();
+                            JTextField priceField = new JTextField();
+                            
+                            insertPanel.setLayout(new BoxLayout(insertPanel, BoxLayout.Y_AXIS));
+                            insertPanel.add(new JLabel("Input ID:"));
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            insertPanel.add(idField);
+                            insertPanel.add(Box.createVerticalStrut(15));
+                            insertPanel.add(new JLabel("Input Food Name:"));
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            insertPanel.add(fnameField);
+                            insertPanel.add(Box.createVerticalStrut(15));
+                            insertPanel.add(new JLabel("Input Price:"));
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            insertPanel.add(priceField);
+                            insertPanel.add(Box.createVerticalStrut(15)); // a spacer
+                            idField.setEditable(false);
+                            String getLastID = table.getModel().getValueAt(table.getRowCount()-1, 0).toString();
+                            int incrementID = Integer.valueOf(getLastID) + 1;
+                            idField.setText(String.valueOf(incrementID));
+                            int result = JOptionPane.showConfirmDialog(null, insertPanel, "Inserting new Food", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                            
+                            if(result == JOptionPane.OK_OPTION){
+                                // insert user to database
+                                    Menu menu = new Menu();
+                                     menu.setId(Integer.parseInt(idField.getText()));
+                                    if(!fnameField.getText().equals("")){
+                                        menu.setFoodname(fnameField.getText());
+
+                                    }else{
+                                           JOptionPane.showMessageDialog(null, "Food Name missing", null, JOptionPane.PLAIN_MESSAGE);
+                                           return;
+                                    }
+                                    if(!priceField.getText().equals("")){
+                                         menu.setPrice(Double.parseDouble(priceField.getText()));
+                                          
+                                    }else{
+                                            JOptionPane.showMessageDialog(null, "Price missing", null, JOptionPane.PLAIN_MESSAGE);
+                                            return;
+                                    }
+//                                    usr.setId(Integer.parseInt(idField.getText()));
+//                                    usr.setUsername(unameField.getText());
+//                                    usr.setPassword(pwordField.getText());
+//                                    usr.setRole(Integer.parseInt(roleField.getText()));
+                                    model.addRow(menu);
+                              }
+                     }
+                 });
+                  update.addActionListener(new ActionListener() {
+                     @Override
+                     public void actionPerformed(ActionEvent e) {
+                            JPanel updatePanel = new JPanel();
+                            JTextField idField = new JTextField();
+                            JTextField fnameField = new JTextField();
+                            JTextField priceField = new JTextField();
+                            
+                            updatePanel.setLayout(new BoxLayout(updatePanel, BoxLayout.Y_AXIS));
+                            updatePanel.add(new JLabel("Input ID:"));
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            updatePanel.add(idField);
+                            updatePanel.add(Box.createVerticalStrut(15));
+                            updatePanel.add(new JLabel("Input Food Name:"));
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            updatePanel.add(fnameField);
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            updatePanel.add(new JLabel("Input Price:"));
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            updatePanel.add(priceField);
+                            updatePanel.add(Box.createVerticalStrut(15)); // a spacer
+                            idField.setEditable(false);
+                            idField.setText(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
+                            fnameField.setText(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
+                            priceField.setText(table.getModel().getValueAt(table.getSelectedRow(), 2).toString());
+                            
+                            int result = JOptionPane.showConfirmDialog(null, updatePanel, "Updating Menu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                            
+                            if(result == JOptionPane.OK_OPTION){
+                                     table.getModel().setValueAt(Integer.parseInt(idField.getText()), table.getSelectedRow(), 0);
+                                     if(!fnameField.getText().equals("")){
+                                     
+                                         table.getModel().setValueAt(fnameField.getText(), table.getSelectedRow(), 1);
+
+                                    }else{
+                                           JOptionPane.showMessageDialog(null, "Food Name missing", null, JOptionPane.PLAIN_MESSAGE);
+                                           return;
+                                    }
+                                    if(!priceField.getText().equals("")){
+                                          table.getModel().setValueAt(priceField.getText(), table.getSelectedRow(), 2);
+                                          
+                                    }else{
+                                            JOptionPane.showMessageDialog(null, "Price missing", null, JOptionPane.PLAIN_MESSAGE);
+                                            return;
+                                    }
+                                    model.updateRow();
+                              }
+                     }
+                 });
                   System.out.println("Menu Table Loaded");
              } catch (Exception e) {
                   System.out.println("Connection Error: "+e.getMessage());
