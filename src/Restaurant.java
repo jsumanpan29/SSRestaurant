@@ -1,6 +1,10 @@
 
 import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -9,12 +13,26 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-public class Restaurant{
+public class Restaurant implements ActionListener{
     
+   JTable orderTable = new JTable();
+   OrderTableModel orderModel = new OrderTableModel();
 //    Runner
         public static void main(String[] args) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    new Restaurant();
+                }
+            };
+            SwingUtilities.invokeLater(runnable);
 //            init
-            init();
+           
+            
+        }
+        public Restaurant(){
+        
+             init();
 //            Scanner sc = new Scanner(System.in);
 //            First Panel
             JPanel firstPanel = new JPanel();
@@ -22,7 +40,6 @@ public class Restaurant{
             JTextField pfield = new JPasswordField(10);
             
             firstPanel.setLayout(new BoxLayout(firstPanel, BoxLayout.Y_AXIS));
-//            firstPanel.setLayout(new BoxLayout(firstPanel, BoxLayout.Y_AXIS));
             firstPanel.add(new JLabel("Input Username:"));
             firstPanel.add(Box.createVerticalStrut(15)); // a spacer
             firstPanel.add(ufield);
@@ -31,39 +48,221 @@ public class Restaurant{
             firstPanel.add(Box.createVerticalStrut(15)); // a spacer
             firstPanel.add(pfield);
             firstPanel.add(Box.createVerticalStrut(15)); // a spacer
-            JOptionPane.showConfirmDialog(null, firstPanel, "Welcome to SSRestaurant", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int result = JOptionPane.showConfirmDialog(null, firstPanel, "Welcome to SSRestaurant", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 //            int menu;
-            
-            if (loginUser(ufield.getText(),pfield.getText()) == 1) {
-//                Execute Owner Authorization
-                JPanel ownerPanel = new JPanel();
-                JTextField inputField = new JTextField();
-                ownerPanel.setLayout(new BoxLayout(ownerPanel, BoxLayout.Y_AXIS));
-                ownerPanel.add(new JLabel("1.)Users Options"));
-                ownerPanel.add(Box.createVerticalStrut(15)); // a spacer
-                ownerPanel.add(new JLabel("2.)Menu Options"));
-                ownerPanel.add(Box.createVerticalStrut(15)); // a spacer
-                ownerPanel.add(inputField);
-                JOptionPane.showConfirmDialog(null, ownerPanel, "Owner Menu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                switch(Integer.parseInt(inputField.getText())){
-                    case 1:
-//                        show Users table
-                       usersTable();
-                        break;
-                    case 2:
-//                        shows Menu table
-                        menuTable();
-                        break;
-                    default:
-                        
-                        break;
+            if(result == JOptionPane.OK_OPTION){
+                if((ufield.getText().equals("") && pfield.getText().equals("")) || ufield.getText().equals("") || pfield.getText().equals("")){
+                    JOptionPane.showMessageDialog(null, "Username or Password Incorrect", null, JOptionPane.PLAIN_MESSAGE);
+                    return;
+                }else{
+//                    System.out.println(ufield.getText());
+//                    System.out.println(pfield.getText());
+                    if(userNameExists(ufield.getText(), pfield.getText()) == true){
+                             if (loginUser(ufield.getText(),pfield.getText()) == 1) {
+                        //                Execute Owner Authorization
+                                        JPanel ownerPanel = new JPanel();
+                                        JTextField inputField = new JTextField();
+                                        ownerPanel.setLayout(new BoxLayout(ownerPanel, BoxLayout.Y_AXIS));
+                                        ownerPanel.add(new JLabel("1.)Users Options"));
+                                        ownerPanel.add(Box.createVerticalStrut(15)); // a spacer
+                                        ownerPanel.add(new JLabel("2.)Menu Options"));
+                                        ownerPanel.add(Box.createVerticalStrut(15)); // a spacer
+                                        ownerPanel.add(inputField);
+                                        JOptionPane.showConfirmDialog(null, ownerPanel, "Owner Menu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                                        switch(Integer.parseInt(inputField.getText())){
+                                            case 1:
+                        //                        show Users table
+                                               usersTable();
+                                                break;
+                                            case 2:
+                        //                        shows Menu table
+                                                menuTable();
+                                                break;
+                                            default:
+
+                                                break;
+                                        }
+                                        return;
+                                  }
+                                    if (loginUser(ufield.getText(),pfield.getText()) == 2){
+                        //                Execute Cashier Authorization
+                                            int cid = getID(ufield.getText(),pfield.getText());
+                                            System.out.println(cid);
+                                            JTextField cashierField = new JTextField();
+
+                                            JFrame frame = new JFrame("SSRestaurant Menu");
+                                            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        //                    Preferred Size of the frame
+                                            frame.setPreferredSize(new Dimension(750, 500));
+                        //                    Borderlayout
+                                            frame.setLayout(new BorderLayout());
+                        //                    Resizable
+                        //                    frame.setResizable(false);
+
+                                            JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                                            JPanel midPanel = new JPanel(new BorderLayout());
+                                            JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                                            Box box = Box.createVerticalBox();
+                                            JPanel leftmidPanel = new JPanel();
+                                            JPanel rightmidPanel = new JPanel(new BorderLayout());
+
+                                            leftmidPanel.setPreferredSize(new Dimension(150, 100));
+                                            leftmidPanel.setLayout(new BoxLayout(leftmidPanel, BoxLayout.Y_AXIS));
+
+                                           
+                                            
+                                            List<Order> orderList = new ArrayList<>();
+                                            orderModel.setList(orderList);
+                                            orderTable.setModel(orderModel);
+                                             orderTable.setAutoCreateRowSorter(true);
+                                         ((DefaultRowSorter)orderTable.getRowSorter()).toggleSortOrder(0);
+                                            rightmidPanel.add(new JScrollPane(orderTable));
+
+                                            JLabel totalPriceLabel = new JLabel("Total Price:");
+                                            JTextField totalPriceField = new JTextField();
+                                            totalPriceField.setEditable(false);
+                                            JButton punchButton = new JButton("Punch");
+                                            totalPriceField.setPreferredSize(new Dimension(70, 20));
+
+                                            bottomPanel.add(totalPriceLabel);
+                                            bottomPanel.add(totalPriceField);
+                                            bottomPanel.add(punchButton);
+                        //                 BufferedReader br = new BufferedReader(new FileReader("menu.txt"));
+                        //                 String l;
+                        //                 MenuTableModel model = new MenuTableModel();
+                        //                 List<Menu> menuList = new ArrayList<Menu>();
+                        //                 while((l = br.readLine()) != null){
+                        //                     String[] data = new String[0];
+                        //                     data = l.split(",");
+                        //                         Menu menu = new Menu();
+                        //                         menu.setId(Integer.parseInt(data[0]));
+                        //                         menu.setFoodname(data[1]);
+                        //                         menu.setPrice(Double.parseDouble(data[2]));
+                        //                         menuList.add(menu);
+                        //                 }
+                        //                 model.setList(menuList);
+                        //                 table.setModel(model);
+                        //                 table.setAutoCreateRowSorter(true);
+                        //                 ((DefaultRowSorter)table.getRowSorter()).toggleSortOrder(0);
+
+                                            try {
+                                                 BufferedReader br = new BufferedReader(new FileReader("menu.txt"));
+                                                String l;
+                                                while((l = br.readLine()) != null){
+                                                    String[] data = new String[0];
+                                                    data = l.split(",");
+                                                          JButton button = new JButton(data[1] +"  Php "+data[2]);
+                                                          button.putClientProperty("id", data[0]);
+                                                          button.putClientProperty("name", data[1]);
+                                                          button.putClientProperty("price", data[2]);
+                                                          button.addActionListener(this);
+                                                          box.add(button);
+                                              }
+                                            } catch (Exception e) {
+                                                System.out.println(e);
+                                            }
+
+                                            leftmidPanel.add(new JScrollPane(box));
+
+
+                                            cashierField.setEditable(false);
+                                            cashierField.setText(ufield.getText());
+                                            topPanel.add(cashierField);
+
+                                            topPanel.setBorder(BorderFactory.createTitledBorder("Cashier"));
+                                            midPanel.setBorder(BorderFactory.createTitledBorder("Orders"));
+                                            midPanel.add(leftmidPanel, BorderLayout.LINE_START);
+                                            midPanel.add(rightmidPanel, BorderLayout.CENTER);
+                                            bottomPanel.setBorder(BorderFactory.createTitledBorder(""));
+
+                                            frame.add(topPanel, BorderLayout.PAGE_START);
+                                            frame.add(midPanel, BorderLayout.CENTER);
+                                            frame.add(bottomPanel, BorderLayout.PAGE_END);
+
+                                            frame.pack();
+                                            frame.setLocationRelativeTo(null);
+                                            frame.setVisible(true);
+                                    }
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Username does not exist", null, JOptionPane.PLAIN_MESSAGE);
+                        return;
+                    }
+                
                 }
             }else{
-//                Execute Cashier Authorization
-                    
+            
+                
             }
         }
         
+         @Override
+        public void actionPerformed(ActionEvent a) {
+           JButton button = (JButton) a.getSource();
+   //        jta.setText(button.getText());
+           int id = Integer.parseInt(button.getClientProperty("id").toString());
+           String name = (String) button.getClientProperty("name");
+           double price = Double.parseDouble(button.getClientProperty("price").toString());
+           int quantity = 1;
+           Order order = new Order(id,name,price,quantity);
+           orderModel.addRow(order);
+       }
+        
+        private boolean userNameExists(String u, String p){
+            try {
+                BufferedReader br = new BufferedReader(new FileReader("users.txt"));
+//                Get line && Compare Username
+                String l,un,pw;
+                while ((l = br.readLine()) !=null) {     
+//                    {id,username,password,user_role}
+                    un = l.split(",")[1];
+                    pw = l.split(",")[2];
+                    System.out.println(un);
+                     System.out.println(pw);
+//                    Compare Username and Password
+                    if (un.equals(u) && pw.equals(p)) {
+                            return true;
+                    }
+                }
+                return false;
+            } catch (IOException e) {
+                System.out.println("Connection Error: "+e.getMessage());
+            }
+            return false;
+         }  
+        
+        private static int getID(String u, String p){
+        int val = 0;
+            try {
+                BufferedReader br = new BufferedReader(new FileReader("users.txt"));
+//                Get line && Compare Username and Password
+                String l,un,pw;
+//                 Get User Role
+                int id;
+                while ((l = br.readLine()) !=null) {     
+//                    {id,username,password,user_role}
+                    un = l.split(",")[1];
+                    pw = l.split(",")[2];
+                     id = Integer.parseInt(l.split(",")[0]);
+                   
+//                    Compare Username and Password
+                    if (un.equals(u) && pw.equals(p)) {
+//                        if (ur == 1) {
+//                            val = 1;
+//                        }
+                            val = id;
+//                        else{
+//                            val = 2;
+//                        }
+                    }
+                }
+                
+            } catch (IOException e) {
+                System.out.println("Connection Error: "+e.getMessage());
+            }
+            return val;
+        
+        }
 //        Login username & password Method
         private static int loginUser(String u, String p) {
             int val = 0;
@@ -184,6 +383,7 @@ public class Restaurant{
                  frame.add(new JScrollPane(table));
                  frame.setTitle("Users Table");
                  frame.pack();
+                 frame.setLocationRelativeTo(null);
                  frame.setVisible(true);
                  
                  
@@ -392,6 +592,7 @@ public class Restaurant{
                  frame.add(new JScrollPane(table));
                  frame.setTitle("Menu Table");
                  frame.pack();
+                 frame.setLocationRelativeTo(null);
                  frame.setVisible(true);
                  
                  
@@ -517,5 +718,6 @@ public class Restaurant{
              } catch (Exception e) {
                   System.out.println("Connection Error: "+e.getMessage());
              }
+             
         }
-}
+}       
