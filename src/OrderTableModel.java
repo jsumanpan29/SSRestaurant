@@ -67,11 +67,33 @@ class OrderTableModel extends AbstractTableModel{
             fireTableCellUpdated(rowIndex,columnIndex);
         }
         
-        public void addRow(Order order){
-            data.add(order);
+        public void add(Order order){
+             Order newOrder = null;
+            if(checkNameIfExists(order.getFoodname(), order.getId())){
+                    newOrder = updateOrderValues(order.getFoodname(), order.getId());
+                    newOrder.setQuantity(newOrder.getQuantity()+order.getQuantity());
+            }else{
+               data.add(order);
+            }
+           
             fireTableDataChanged();
         }
 
-    
+        public boolean checkNameIfExists(String name, int id){
+            for(Order order : data) {
+                if(name.equals(order.getFoodname()) && id == order.getId()){
+                        return true;
+                }
+            }
+            return false;
+        }
+         public Order updateOrderValues(String name, int id){
+            for(Order order : data) {
+                  if(name.equals(order.getFoodname()) && id == order.getId()){
+                          return order;
+                  }
+              }
+            return null;
+         }
 
 }

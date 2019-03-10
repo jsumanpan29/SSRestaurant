@@ -86,7 +86,7 @@ public class Restaurant implements ActionListener{
                                   }
                                     if (loginUser(ufield.getText(),pfield.getText()) == 2){
                         //                Execute Cashier Authorization
-                                            int cid = getID(ufield.getText(),pfield.getText());
+                                            int cid = getID("User ID:"+ufield.getText(),pfield.getText());
                                             System.out.println(cid);
                                             JTextField cashierField = new JTextField();
 
@@ -205,7 +205,7 @@ public class Restaurant implements ActionListener{
            double price = Double.parseDouble(button.getClientProperty("price").toString());
            int quantity = 1;
            Order order = new Order(id,name,price,quantity);
-           orderModel.addRow(order);
+           orderModel.add(order);
        }
         
         private boolean userNameExists(String u, String p){
@@ -217,8 +217,6 @@ public class Restaurant implements ActionListener{
 //                    {id,username,password,user_role}
                     un = l.split(",")[1];
                     pw = l.split(",")[2];
-                    System.out.println(un);
-                     System.out.println(pw);
 //                    Compare Username and Password
                     if (un.equals(u) && pw.equals(p)) {
                             return true;
