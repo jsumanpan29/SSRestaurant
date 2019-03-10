@@ -21,6 +21,7 @@ class OrderTableModel extends AbstractTableModel{
 
     @Override
     public int getRowCount() {
+//        System.out.println(data.size());
        return data.size();
     }
 
@@ -77,6 +78,11 @@ class OrderTableModel extends AbstractTableModel{
             }
            
             fireTableDataChanged();
+        }
+        
+        public void remove(int row){
+                 data.remove(row);
+                 fireTableRowsDeleted(row, row);
         }
 
         public boolean checkNameIfExists(String name, int id){

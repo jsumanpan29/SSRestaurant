@@ -17,6 +17,7 @@ public class Restaurant implements ActionListener{
     
    JTable orderTable = new JTable();
    OrderTableModel orderModel = new OrderTableModel();
+   JTextField totalPriceField = new JTextField();
 //    Runner
         public static void main(String[] args) {
             Runnable runnable = new Runnable() {
@@ -55,8 +56,6 @@ public class Restaurant implements ActionListener{
                     JOptionPane.showMessageDialog(null, "Username or Password Incorrect", null, JOptionPane.PLAIN_MESSAGE);
                     return;
                 }else{
-//                    System.out.println(ufield.getText());
-//                    System.out.println(pfield.getText());
                     if(userNameExists(ufield.getText(), pfield.getText()) == true){
                              if (loginUser(ufield.getText(),pfield.getText()) == 1) {
                         //                Execute Owner Authorization
@@ -86,8 +85,8 @@ public class Restaurant implements ActionListener{
                                   }
                                     if (loginUser(ufield.getText(),pfield.getText()) == 2){
                         //                Execute Cashier Authorization
-                                            int cid = getID("User ID:"+ufield.getText(),pfield.getText());
-                                            System.out.println(cid);
+                                            int cid = getID(ufield.getText(),pfield.getText());
+                                            System.out.println("User ID: "+cid);
                                             JTextField cashierField = new JTextField();
 
                                             JFrame frame = new JFrame("SSRestaurant Menu");
@@ -119,32 +118,31 @@ public class Restaurant implements ActionListener{
                                             rightmidPanel.add(new JScrollPane(orderTable));
 
                                             JLabel totalPriceLabel = new JLabel("Total Price:");
-                                            JTextField totalPriceField = new JTextField();
+                                            
                                             totalPriceField.setEditable(false);
                                             JButton punchButton = new JButton("Punch");
+                                            JButton removeButton = new JButton("Remove");
                                             totalPriceField.setPreferredSize(new Dimension(70, 20));
-
+                                             
+                                            removeButton.addActionListener(new ActionListener() {
+                                                @Override
+                                                public void actionPerformed(ActionEvent e) {
+                                                    double pricePerQty = 0;
+                                                    double sumTotal = 0;
+                                                   orderModel.remove(orderTable.getSelectedRow());
+                                                    for (int i = 0; i <= orderModel.getRowCount()-1; i++) {
+                                                        double x = Double.parseDouble(orderModel.getValueAt(i, 2).toString());
+                                                        double y = Double.parseDouble(orderModel.getValueAt(i, 3).toString());
+                                                        pricePerQty = x * y;
+                                                        sumTotal = sumTotal + pricePerQty;
+                                                    }
+                                                  totalPriceField.setText("Php "+String.valueOf(sumTotal));
+                                                }
+                                            });
                                             bottomPanel.add(totalPriceLabel);
                                             bottomPanel.add(totalPriceField);
                                             bottomPanel.add(punchButton);
-                        //                 BufferedReader br = new BufferedReader(new FileReader("menu.txt"));
-                        //                 String l;
-                        //                 MenuTableModel model = new MenuTableModel();
-                        //                 List<Menu> menuList = new ArrayList<Menu>();
-                        //                 while((l = br.readLine()) != null){
-                        //                     String[] data = new String[0];
-                        //                     data = l.split(",");
-                        //                         Menu menu = new Menu();
-                        //                         menu.setId(Integer.parseInt(data[0]));
-                        //                         menu.setFoodname(data[1]);
-                        //                         menu.setPrice(Double.parseDouble(data[2]));
-                        //                         menuList.add(menu);
-                        //                 }
-                        //                 model.setList(menuList);
-                        //                 table.setModel(model);
-                        //                 table.setAutoCreateRowSorter(true);
-                        //                 ((DefaultRowSorter)table.getRowSorter()).toggleSortOrder(0);
-
+                                            bottomPanel.add(removeButton);
                                             try {
                                                  BufferedReader br = new BufferedReader(new FileReader("menu.txt"));
                                                 String l;
@@ -198,6 +196,9 @@ public class Restaurant implements ActionListener{
         
          @Override
         public void actionPerformed(ActionEvent a) {
+//            String[] amount = new String[0];
+            double pricePerQty = 0;
+            double sumTotal = 0;
            JButton button = (JButton) a.getSource();
    //        jta.setText(button.getText());
            int id = Integer.parseInt(button.getClientProperty("id").toString());
@@ -206,6 +207,13 @@ public class Restaurant implements ActionListener{
            int quantity = 1;
            Order order = new Order(id,name,price,quantity);
            orderModel.add(order);
+             for (int i = 0; i <= orderModel.getRowCount()-1; i++) {
+                 double x = Double.parseDouble(orderModel.getValueAt(i, 2).toString());
+                 double y = Double.parseDouble(orderModel.getValueAt(i, 3).toString());
+                 pricePerQty = x * y;
+                 sumTotal += pricePerQty;
+             }
+           totalPriceField.setText("Php "+String.valueOf(sumTotal));
        }
         
         private boolean userNameExists(String u, String p){
@@ -470,11 +478,6 @@ public class Restaurant implements ActionListener{
                                             JOptionPane.showMessageDialog(null, "Password missing", null, JOptionPane.PLAIN_MESSAGE);
                                             return;
                                     }
-                                    
-//                                    table.getModel().setValueAt(usr.getId(), table.getSelectedRow(), 0);
-//                                    table.getModel().setValueAt(usr.getUsername(), table.getSelectedRow(), 1);
-//                                    table.getModel().setValueAt(usr.getPassword(), table.getSelectedRow(), 2);
-//                                    table.getModel().setValueAt(usr.getRole(), table.getSelectedRow(), 3);
                                     model.updateRow();
                               }
                      }
