@@ -67,20 +67,23 @@ public class Restaurant implements ActionListener{
                                         ownerPanel.add(new JLabel("2.)Menu Options"));
                                         ownerPanel.add(Box.createVerticalStrut(15)); // a spacer
                                         ownerPanel.add(inputField);
-                                        JOptionPane.showConfirmDialog(null, ownerPanel, "Owner Menu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                                        switch(Integer.parseInt(inputField.getText())){
-                                            case 1:
-                        //                        show Users table
-                                               usersTable();
-                                                break;
-                                            case 2:
-                        //                        shows Menu table
-                                                menuTable();
-                                                break;
-                                            default:
+                                        int ownerResult = JOptionPane.showConfirmDialog(null, ownerPanel, "Owner Menu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                                        if (ownerResult == JOptionPane.OK_OPTION) {
+                                            switch(Integer.parseInt(inputField.getText())){
+                                                case 1:
+                            //                        show Users table
+                                                   usersTable();
+                                                    break;
+                                                case 2:
+                            //                        shows Menu table
+                                                    menuTable();
+                                                    break;
+                                                default:
 
-                                                break;
+                                                    break;
+                                            }
                                         }
+                                       
                                         return;
                                   }
                                     if (loginUser(ufield.getText(),pfield.getText()) == 2){
@@ -92,7 +95,7 @@ public class Restaurant implements ActionListener{
                                             JFrame frame = new JFrame("SSRestaurant Menu");
                                             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                         //                    Preferred Size of the frame
-                                            frame.setPreferredSize(new Dimension(750, 500));
+                                            frame.setPreferredSize(new Dimension(1000, 550));
                         //                    Borderlayout
                                             frame.setLayout(new BorderLayout());
                         //                    Resizable
@@ -118,11 +121,14 @@ public class Restaurant implements ActionListener{
                                             rightmidPanel.add(new JScrollPane(orderTable));
 
                                             JLabel totalPriceLabel = new JLabel("Total Price:");
-                                            
+                                            JTextField customerField = new JTextField();
+                                            JTextField amountField = new JTextField();
                                             totalPriceField.setEditable(false);
                                             JButton punchButton = new JButton("Punch");
                                             JButton removeButton = new JButton("Remove");
-                                            totalPriceField.setPreferredSize(new Dimension(70, 20));
+                                            totalPriceField.setPreferredSize(new Dimension(100, 20));
+                                            customerField.setPreferredSize(new Dimension(150, 20));
+                                            amountField.setPreferredSize(new Dimension(100, 20));
                                              
                                             removeButton.addActionListener(new ActionListener() {
                                                 @Override
@@ -139,6 +145,54 @@ public class Restaurant implements ActionListener{
                                                   totalPriceField.setText("Php "+String.valueOf(sumTotal));
                                                 }
                                             });
+                                            punchButton.addActionListener(new ActionListener() {
+                                                @Override
+                                                public void actionPerformed(ActionEvent e) {
+                                                    if(amountField.getText().equals("")){
+                                                        JOptionPane.showMessageDialog(null, "Please Input Amount First", null, JOptionPane.PLAIN_MESSAGE);
+                                                        return;
+                                                    }else{
+                                                        double totalPrice = Double.parseDouble(totalPriceField.getText().substring(4));
+                                                        double change = Double.parseDouble(amountField.getText()) - totalPrice;
+                                                        if(Double.parseDouble(amountField.getText())<totalPrice){
+                                                            JOptionPane.showMessageDialog(null, "Amount is lower than the total price", null, JOptionPane.PLAIN_MESSAGE);
+                                                            return;
+                                                        }else{
+                                                            String result = "";
+                                                            StringBuilder sb = new StringBuilder();
+                                                             for (Order order: orderModel.getData()) {
+                                                                 sb.append(order.getQuantity()+" "+order.getFoodname()+"  Php "+order.getPrice()+" \t\tPhp  "+(order.getQuantity()*order.getPrice())+"\n\n");
+                                                             }
+                                                             result = sb.toString();
+                                                             JTextArea receiptTextArea = new JTextArea( "\t-- SS-RESTAURANT --\n\n" +
+                                                             "CASHIER ID: " + cid + "\n\n" +
+                                                             "CASHIER NAME: " + ufield.getText() + "\n\n" +
+                                                             "CUSTOMER NAME: " + customerField.getText() + "\n\n" +
+                                                             "-------------------------------------------------------------------------\n\n"+
+                                                             result +
+                                                             "-------------------------------------------------------------------------\n\n"+
+                                                             "TOTAL: \t\t\tPhp " + totalPrice + "\n\n" +
+                                                             "CASH: \t\t\tPhp " + Double.parseDouble(amountField.getText()) + "\n\n" +
+                                                             "CHANGE: \t\t\tPhp " + change + "\n\n" +
+                                                             "-- THANK YOU! --" 
+                                                                    , 10, 10);
+                                                             JPanel receiptPanel = new JPanel(new BorderLayout());
+
+                                                             receiptPanel.setBorder(BorderFactory.createTitledBorder("Receipt"));
+                                                             receiptTextArea.setEditable(false);
+                                                             receiptPanel.setPreferredSize(new Dimension(350, 600));
+                                                              receiptPanel.add(new JScrollPane(receiptTextArea));  
+         //                                                     int ownerResult = 
+                                                            JOptionPane.showConfirmDialog(null, receiptPanel, "Receipt", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                                                        }
+                                                        
+                                                    }
+                                                }
+                                            });
+                                            bottomPanel.add(new JLabel("Customer Name:"));
+                                            bottomPanel.add(customerField);
+                                            bottomPanel.add(new JLabel("Input Amount:"));
+                                             bottomPanel.add(amountField);
                                             bottomPanel.add(totalPriceLabel);
                                             bottomPanel.add(totalPriceField);
                                             bottomPanel.add(punchButton);
@@ -196,11 +250,9 @@ public class Restaurant implements ActionListener{
         
          @Override
         public void actionPerformed(ActionEvent a) {
-//            String[] amount = new String[0];
             double pricePerQty = 0;
             double sumTotal = 0;
            JButton button = (JButton) a.getSource();
-   //        jta.setText(button.getText());
            int id = Integer.parseInt(button.getClientProperty("id").toString());
            String name = (String) button.getClientProperty("name");
            double price = Double.parseDouble(button.getClientProperty("price").toString());
@@ -412,7 +464,6 @@ public class Restaurant implements ActionListener{
                  update.addActionListener(new ActionListener() {
                      @Override
                      public void actionPerformed(ActionEvent e) {
-//                          System.out.println(table.getModel().getValueAt(table.getSelectedRow(), 2));
                             JPanel updatePanel = new JPanel();
                             JTextField idField = new JTextField();
                             JTextField unameField = new JTextField();
@@ -446,9 +497,6 @@ public class Restaurant implements ActionListener{
                             
                             if(result == JOptionPane.OK_OPTION){
                                 // insert user to database
-//                                    User usr = new User();
-//                                    usr.setId(Integer.parseInt(idField.getText()));
-//                                    model.updateRow();
                                      table.getModel().setValueAt(Integer.parseInt(idField.getText()), table.getSelectedRow(), 0);
                                     if (!unameField.getText().equals("")) {
                                         if(!model.userNameExists(unameField.getText())){
@@ -658,10 +706,6 @@ public class Restaurant implements ActionListener{
                                             JOptionPane.showMessageDialog(null, "Price missing", null, JOptionPane.PLAIN_MESSAGE);
                                             return;
                                     }
-//                                    usr.setId(Integer.parseInt(idField.getText()));
-//                                    usr.setUsername(unameField.getText());
-//                                    usr.setPassword(pwordField.getText());
-//                                    usr.setRole(Integer.parseInt(roleField.getText()));
                                     model.addRow(menu);
                               }
                      }

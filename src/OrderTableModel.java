@@ -13,6 +13,10 @@ class OrderTableModel extends AbstractTableModel{
             fireTableDataChanged();
         }
 
+    public List<Order> getData() {
+        return data;
+    }
+
       
     @Override
     public String getColumnName(int column) {
